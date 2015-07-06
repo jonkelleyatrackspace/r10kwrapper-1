@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import logging, subprocess, ConfigParser, argparse, sys, os
+import logging, subprocess, ConfigParser, argparse, sys, os, errno
 
 __author__  = 'Jonathan Kelley'
 
@@ -108,8 +108,16 @@ def retrieve_config_sections_from_disk(inifile=wrapper_conf,sections=[]):
 
     return batch_result
 
+def make_directory_path(dpath):
+    """ This is a `mkdir -p` function """
+    if not os.path.exists(dpath):
+        os.makedirs(dpath)
+
 def execute_r10k(puppetfile=None,modules_directory=None,action="check",r10k_append_flags=''):
     """ Wraps some magic around the r10k command """
+
+    if modules_directory:
+        make_directory_path(modules_directory)
 
     if not action == "check":
         # We really force check everything.
@@ -122,7 +130,13 @@ def execute_r10k(puppetfile=None,modules_directory=None,action="check",r10k_appe
 
     logging.debug(ansi.brown + "ENV_VARS: " + str(env_vars) + ansi.clear)
     logging.debug(ansi.brown + "SHELLEXEC: " + str(command) + ansi.clear)
-    process  = subprocess.Popen(command.split(), stdout=subprocess.PIPE, env=env_vars)
+    try:
+        process  = subprocess.Popen(command.split(), stdout=subprocess.PIPE, env=env_vars)
+    except OSError, e: # If OSError: [Errno 2] No such file or directory
+        if e.errno == 2:
+            logging.error(ansi.red + ': No such file or directory ' +  r10k_binary + ': Execution failed.' + ansi.clear)
+            sys.exit(1)
+
     output   = process.communicate()[0]
 
     logging.debug(ansi.brown + "STAT: " + str(process.returncode) + ansi.brown + " --- " +

@@ -5,7 +5,7 @@
 %define module_name r10kwrapper
 
 Name:           %{module_name}
-Version:        0.3.0
+Version:        0.3.1
 Release:        1
 Epoch:          2
 Summary:        r10kwrapper - A tool that does a bit of automation and management around the use of the r10k command.
