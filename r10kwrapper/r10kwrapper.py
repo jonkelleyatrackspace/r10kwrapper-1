@@ -89,22 +89,43 @@ def retrieve_config_sections_from_disk(inifile=wrapper_conf,sections=[]):
     config.read(inifile)
 
     batch_result = []
-    if 'all' in sections:
+    if 'all_global_hiera' in sections:
+        # This is a magic config param that will execute any CONFIG HEADING with:
+        #  *hiera-global OR exactly 'global-hiera'
+        for module, envvars in config._sections.items():
+            if module.endswith('hiera-global') or module == 'global-hiera':
+                logging.debug(ansi.cyan + 'Found ' + ansi.green + module + ansi.cyan + 
+                    " within ini file." + ansi.clear )
+                puppetfile = envvars['puppetfile']
+                module_destination = envvars['moduledest']
+                batch_result.append((puppetfile,module_destination))
+    if 'all_product_hiera' in sections:
+        # This is a magic config param that will execute any CONFIG HEADING with:
+        #  *-hiera BUT NOT 'global-hiera'
+        for module, envvars in config._sections.items():
+            if module.endswith('-hiera') and not module == 'global-hiera':
+                logging.debug(ansi.cyan + 'Found ' + ansi.green + module + ansi.cyan + 
+                    " within ini file." + ansi.clear )
+                puppetfile = envvars['puppetfile']
+                module_destination = envvars['moduledest']
+                batch_result.append((puppetfile,module_destination))
+    elif 'all' in sections:
+        # This is a magic config param that will execute ALL CONFIG HEADINGS
         for module, envvars in config._sections.items():
             logging.debug(ansi.cyan + 'Found ' + ansi.green + module + ansi.cyan + 
                 " within ini file." + ansi.clear )
-
             puppetfile = envvars['puppetfile']
             module_destination = envvars['moduledest']
-
             batch_result.append((puppetfile,module_destination))
-
     else:
         for section in sections:
-            puppetfile = config.items(section)[0][1]
-            module_destination = config.items(section)[1][1]
-
-            batch_result.append((puppetfile,module_destination))
+            try:
+                puppetfile = config.items(section)[0][1]
+                module_destination = config.items(section)[1][1]
+                batch_result.append((puppetfile,module_destination))
+            except ConfigParser.NoSectionError, e:
+                logging.error(ansi.red + ': ConfigParser.NoSectionError: ' + str(e) + ansi.clear)
+                sys.exit(1)
 
     return batch_result
 
