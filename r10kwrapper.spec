@@ -10,7 +10,7 @@ Release:        1
 Epoch:          2
 Summary:        r10kwrapper - A tool that does a bit of automation and management around the use of the r10k command.
 
-License:        The FreeBSD Copyright
+License:        Apache License Version 2.0
 URL:            https://github.com/jonkelleyatrackspace/r10kwrapper
 Source0:        %{module_name}-%{version}.tar.gz
 Requires:       python-setuptools
