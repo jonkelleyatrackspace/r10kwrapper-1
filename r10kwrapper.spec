@@ -5,7 +5,7 @@
 %define module_name r10kwrapper
 
 Name:           %{module_name}
-Version:        0.3.1
+Version:        0.3.2
 Release:        1
 Epoch:          2
 Summary:        r10kwrapper - A tool that does a bit of automation and management around the use of the r10k command.
@@ -37,6 +37,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,-,-) %{_bindir}/r10kwrapper
 
 %changelog
+* Thu Aug 12 2015 Jonathan Kelley <jon.kelley@rackspace.com> 0.3.2
+- Fixed bug in the all_global_hiera ifelse logic
+* Thu Aug 12 2015 Jonathan Kelley <jon.kelley@rackspace.com> 0.3.1
+- Added osmkdir for non existing targets.
+- Added built in config option all_global_hiera, to auto apply all hieras.
+- Added built in config option all_product_hiera, to auto apply all product hieras.
 * Thu Nov 17 2014 Jonathan Kelley <jon.kelley@rackspace.com> 0.1.3
 - Fixed error reporting.
 - Added the ability to fetch a seperate `R10K_BINARY` based on environment.

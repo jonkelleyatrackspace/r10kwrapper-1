@@ -99,7 +99,7 @@ def retrieve_config_sections_from_disk(inifile=wrapper_conf,sections=[]):
                 puppetfile = envvars['puppetfile']
                 module_destination = envvars['moduledest']
                 batch_result.append((puppetfile,module_destination))
-    if 'all_product_hiera' in sections:
+    elif 'all_product_hiera' in sections:
         # This is a magic config param that will execute any CONFIG HEADING with:
         #  *-hiera BUT NOT 'global-hiera'
         for module, envvars in config._sections.items():
